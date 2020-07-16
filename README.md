@@ -1,35 +1,73 @@
-*Psst — looking for an app template? Go here --> [sveltejs/template](https://github.com/sveltejs/template)*
+<h1 align="center">
+  prism-svelte-renderer
+  <br>
+</h1>
+<p align="center" style="font-size: 1.2rem;">
+ A port of <a href="https://github.com/FormidableLabs/prism-react-renderer">prism-react-renderer</a> to svelte.
+</p>
+## Why?
 
----
+In contrast to other svelte prismjs libraries this library doesn't generate HTML and inject it as raw HTML. As it tries to have an API similar to `prism-react-renderer` you can customize how your code is displayed using the default slot.
 
-# component-template
+## Installation
 
-A base for building shareable Svelte components. Clone it with [degit](https://github.com/Rich-Harris/degit):
+You have to install `prismjs` along with `prism-svelte-renderer`. You also have to make sure that the languages you want to use are registered as well.
 
-```bash
-npx degit sveltejs/component-template my-new-component
-cd my-new-component
-npm install # or yarn
+## Usage
+
+### Basic Example
+
+Import PrismJS and `prism-svelte-rnederer`:
+
+```js
+import Prism from "prismjs";
+import Highlight from "prism-svelte-renderer";
 ```
 
-Your component's source code lives in `src/Component.svelte`.
+Import a theme:
 
-You can create a package that exports multiple components by adding them to the `src` directory and editing `src/index.js` to reexport them as named exports.
+```js
+import theme from "prism-svelte-renderer/themes/dracula";
+```
 
-TODO
+Add the following to your template code:
 
-* [ ] some firm opinions about the best way to test components
-* [ ] update `degit` so that it automates some of the setup work
+```sv
+<div style="background-color: {theme.plain.backgroundColor}">
+  <Highlight {theme} {Prism} text={simpleExample} language=html />
+</div>
+```
 
+### Advanced Usage
 
-## Setting up
+You can provide a slot along with the component if you want to customize how your code is rendered.
 
-* Run `npm init` (or `yarn init`)
-* Replace this README with your own
+The following code will display line-numbers:
 
+```sv
+<div style="background-color: {theme.plain.backgroundColor}" class="wrapper">
+  <Highlight
+    {theme}
+    {Prism}
+    text={advancedExample}
+    language=html
+    let:lines
+    let:getStyle>
+    {#each lines as line, index}
+      <div class="line">
+        <div class="line-number">{index + 1}</div>
 
-## Consuming components
+        {#each line as token}
+          <span
+            style="
+              color: {getStyle(token, 'color')};
+              font-style: {getStyle(token, 'fontStyle')};">
+            {token.content}
+          </span>
+        {/each}
 
-Your package.json has a `"svelte"` field pointing to `src/index.js`, which allows Svelte apps to import the source code directly, if they are using a bundler plugin like [rollup-plugin-svelte](https://github.com/sveltejs/rollup-plugin-svelte) or [svelte-loader](https://github.com/sveltejs/svelte-loader) (where [`resolve.mainFields`](https://webpack.js.org/configuration/resolve/#resolve-mainfields) in your webpack config includes `"svelte"`). **This is recommended.**
-
-For everyone else, `npm run build` will bundle your component's source code into a plain JavaScript module (`dist/index.mjs`) and a UMD script (`dist/index.js`). This will happen automatically when you publish your component to npm, courtesy of the `prepublishOnly` hook in package.json.
+      </div>
+    {/each}
+  </Highlight>
+</div>
+```
