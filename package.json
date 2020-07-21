@@ -2,6 +2,7 @@
   "name": "prism-svelte-renderer",
   "version": "0.0.1",
   "description": "Renders highlighted code in svelte",
+  "license": "MIT",
   "svelte": "src/index.js",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
